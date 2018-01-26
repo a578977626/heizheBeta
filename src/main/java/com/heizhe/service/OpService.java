@@ -27,75 +27,42 @@ import me.chanjar.weixin.mp.bean.material.WxMpMaterialNews;
 import me.chanjar.weixin.mp.bean.material.WxMpMaterialUploadResult;
 import me.chanjar.weixin.mp.bean.result.WxMpMassSendResult;
 
+/**
+ * 操作类
+ * @author chenxb2
+ *
+ */
 @Service
 public class  OpService {
 
 	@Autowired
 	private WxMpService wxService;
 	
-	
+	/**
+	 * 根据URL生成素材
+	 * @param url 回答的URL
+	 */
 	public void uploadMatZhiHu(String url){
 		
-	Document zhihuSource = CommonTools.getDocByUrl(url);
-	Elements zhihuConEles  = zhihuSource.getElementsByClass("RichText CopyrightRichText-richText");
-	
-	Element zhihuConEle = zhihuConEles.first();
-	/**********     这个是生产的数据了         *********/
-	Elements ss = zhihuConEle.children(); 
+	/********** 获取到zhihu答案拼装后的WxContent*********/
+	Elements ss = CommonTools.getEleByAnswerUrl(url);
+	String wxContentRes = combineWxMat(ss);
 	
 	
-	StringBuffer wxContent = new StringBuffer();
+	/********** 获取作者名字*********/
 	
-	for(Element ele : ss){
-		/**********     如果是图片就要下载下来并且拼装         *********/
-		if("p".equals(ele.tagName())){
-			String pTag = ele.toString();
-			System.out.println("段落"+ele.toString());
-			wxContent.append(pTag);
-		}
-		
-		if("figure".equals(ele.tagName())){
-			Element noscript = ele.getElementsByTag("noscript").first();
-			//https://pic2.zhimg.com/50/v2-1a77e6e876ef5f24d421c9e43190d3a6_hd.jpg
-			String imgUrl =  noscript.child(0).attr("src");
-//			String imgUrl = ele.child(0).child(0).attr("src"); 这里俩个child(0)是一样的道理
-//			String imgUrl = "https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/logo_white_fe6da1ec.png"; //百度logo
-			String imageName = UrlTools.getTheImageName(imgUrl);
-			System.out.println("download Image:"+imgUrl);
-			//下载图片到本地
-			File file = new File("f:/zhihu/"+imageName);
-			if (!file.exists()) {
-				try {
-					HttpClientUtil.down(HttpConfig.custom().url(imgUrl).out(new FileOutputStream(file)));
-				} catch (FileNotFoundException | HttpProcessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			//上传到微信并获取URL
-			String wxUrl = "";
-			try {
-				WxMediaImgUploadResult imageRes = wxService.getMaterialService().mediaImgUpload(file);
-				wxUrl = imageRes.getUrl();
-				System.out.println("upload to WeChat"+wxUrl);
-			} catch (WxErrorException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			if(!("".equals(wxUrl))){
-				wxContent.append(ConsTantWx.COMMON_IMAGE_PREFIX+wxUrl+ConsTantWx.COMMON_IMAGE_Suffix);
-			}
-		}
-	}
+	/********** 获取问题的标题*********/
 	
-	//Y8Bjr0YiUQJigb3UR2WU-fRwkGZV43Z_2QWnmty47Qk  一个图片的mediaId和url
-	//http://mmbiz.qpic.cn/mmbiz_jpg/uDbxxbf4KbS0tibeDSFNo1ibN7w3qgegbce3uBMWx37gTuicUUkFV3QUWiaXZky4I4fblVFLia9UuQskNduayQCM6Dw/0?wx_fmt=jpeg 
-	//拼装成功后调用保存图文素材接口，然后再调用发布文章接口
-	String wxContentRes = wxContent.toString();
+	
+	
+	//拼装成功后调用保存图文素材接口
+	
 	WxMpMaterialNews wxMpMaterialNewsMultiple = new WxMpMaterialNews();
 	WxMpMaterialNews.WxMpMaterialNewsArticle article = new WxMpMaterialNews.WxMpMaterialNewsArticle();
 	article.setAuthor("author");
 	//TODO 缩率图
+	//Y8Bjr0YiUQJigb3UR2WU-fRwkGZV43Z_2QWnmty47Qk  一个图片的mediaId和url
+	//http://mmbiz.qpic.cn/mmbiz_jpg/uDbxxbf4KbS0tibeDSFNo1ibN7w3qgegbce3uBMWx37gTuicUUkFV3QUWiaXZky4I4fblVFLia9UuQskNduayQCM6Dw/0?wx_fmt=jpeg 
 	article.setThumbMediaId("Y8Bjr0YiUQJigb3UR2WU-fRwkGZV43Z_2QWnmty47Qk");//这里有个缩率图TODO
 	article.setTitle("测试标题");
 	article.setContent(wxContentRes);
@@ -114,7 +81,10 @@ public class  OpService {
 		e.printStackTrace();
 	}}
 	
-	
+	/**
+	 * 测试抓取数据
+	 * @param url
+	 */
 	public void uploadMatZhiHu001(String url){
 		Document zhihuSource = CommonTools.getDocByUrl(url);
 		Elements zhihuConEles  = zhihuSource.getElementsByClass("RichText CopyrightRichText-richText");
@@ -137,7 +107,10 @@ public class  OpService {
 		
 	}
 	
-	
+	/**
+	 * 给自己发送信息
+	 * @param mes 信息内容
+	 */
 	public void sendAMessage(String mes){
 		//cxb's openId
 		String openid = "o14cB1mSBkyq4PCk3jLXnrnSui2g";
@@ -150,7 +123,10 @@ public class  OpService {
 		}
   }
 	
-	
+	/**
+	 * 发布要推送的文章
+	 * @param mediaId
+	 */
 	public void sendMessageNews(String mediaId){
 	
 	WxMpMassTagMessage massMessage = new WxMpMassTagMessage();
@@ -161,7 +137,6 @@ public class  OpService {
     //如果不设置则就意味着发给所有用户
 	//massMessage.setTagId(wxService.getUserTagService().tagGet().get(0).getId());
 	
-
     try {
 		WxMpMassSendResult massResult = wxService.getMassMessageService()
 		  .massGroupMessageSend(massMessage);
@@ -169,5 +144,54 @@ public class  OpService {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}}
+	
+	
+	
+	private String combineWxMat(Elements ss){
+		StringBuffer wxContent = new StringBuffer();
+		
+		for(Element ele : ss){
+			/**********     如果是图片就要下载下来并且拼装         *********/
+			if("p".equals(ele.tagName())){
+				String pTag = ele.toString();
+				System.out.println("段落"+ele.toString());
+				wxContent.append(pTag);
+			}
+			
+			if("figure".equals(ele.tagName())){
+				Element noscript = ele.getElementsByTag("noscript").first();
+				//https://pic2.zhimg.com/50/v2-1a77e6e876ef5f24d421c9e43190d3a6_hd.jpg
+				String imgUrl =  noscript.child(0).attr("src");
+//				String imgUrl = ele.child(0).child(0).attr("src"); 这里俩个child(0)是一样的道理
+//				String imgUrl = "https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/logo_white_fe6da1ec.png"; //百度logo
+				String imageName = UrlTools.getTheImageName(imgUrl);
+				System.out.println("download Image:"+imgUrl);
+				//下载图片到本地
+				File file = new File("f:/zhihu/"+imageName);
+				if (!file.exists()) {
+					try {
+						HttpClientUtil.down(HttpConfig.custom().url(imgUrl).out(new FileOutputStream(file)));
+					} catch (FileNotFoundException | HttpProcessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				//上传到微信并获取URL
+				String wxUrl = "";
+				try {
+					WxMediaImgUploadResult imageRes = wxService.getMaterialService().mediaImgUpload(file);
+					wxUrl = imageRes.getUrl();
+					System.out.println("upload to WeChat"+wxUrl);
+				} catch (WxErrorException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if(!("".equals(wxUrl))){
+					wxContent.append(ConsTantWx.COMMON_IMAGE_PREFIX+wxUrl+ConsTantWx.COMMON_IMAGE_Suffix);
+				}
+			}
+		}
+		return wxContent.toString();
+	}
 	
 }
