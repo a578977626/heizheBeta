@@ -30,7 +30,7 @@ public class BusContorller {
 	}
 
 	/**
-	 * 给自己发送信息的接口123
+	 * 给自己发送信息的接口123123123
 	 * 
 	 * @param mes
 	 * @return
