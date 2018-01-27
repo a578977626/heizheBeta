@@ -1,7 +1,7 @@
 package com.heizhe.entity;
-import java.util.Date;
-import java.io.Serializable;
 
+import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -92,6 +92,7 @@ public class DailyHotBasic implements Serializable{
 		this.answerType = answerType;
 	}
 	public Date getCreatedDate() {
+		return createdDate;
 	}
 	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
