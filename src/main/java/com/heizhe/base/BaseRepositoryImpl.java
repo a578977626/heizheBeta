@@ -7,6 +7,8 @@ import javax.persistence.EntityManager;
 
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
+import com.heizhe.entity.DailyHotBasic;
+
 /**
  * SimpleJpaRepository的代替品
  * 
@@ -29,7 +31,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 	// 通过EntityManager来完成查询
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object[]> listBySQL(String sql) {
+	public List<DailyHotBasic> listBySQL(String sql) {
 		return entityManager.createNativeQuery(sql).getResultList();
 	}
 }

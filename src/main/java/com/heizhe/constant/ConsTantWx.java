@@ -31,12 +31,12 @@ public class ConsTantWx {
 	public static String DAILY_HOT_ANSTER_URL = "https://www.zhihu.com/node/ExploreAnswerListV2";
 	
 	/**
-	 * 日度热门前5（参数）
+	 * 日度热门前5（参数）{"offset":0,"type":"day"}
 	 */
 	public static String DAILY_HOTANSTER_1_TO_5 = "{\"offset\":0,\"type\":\"day\"}";
 	
 	/**
-	 * 日度热门前5-10（参数）
+	 * 日度热门前5-10（参数）{"offset":5,"type":"day"}
 	 */
 	public static String DAILY_HOTANSTER_5_TO_10 = "{\"offset\":5,\"type\":\"day\"}";
 	

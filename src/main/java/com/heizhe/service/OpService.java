@@ -3,6 +3,7 @@ package com.heizhe.service;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.List;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,6 +15,8 @@ import com.arronlong.httpclientutil.HttpClientUtil;
 import com.arronlong.httpclientutil.common.HttpConfig;
 import com.arronlong.httpclientutil.exception.HttpProcessException;
 import com.heizhe.constant.ConsTantWx;
+import com.heizhe.entity.DailyHotBasic;
+import com.heizhe.rep.DailyHotRespository;
 import com.heizhe.tools.CommonTools;
 import com.heizhe.tools.UrlTools;
 
@@ -38,19 +41,26 @@ public class  OpService {
 	@Autowired
 	private WxMpService wxService;
 	
+	@Autowired
+	private DailyHotRespository dailyHotRespository;
+	
 	/**
 	 * 根据URL生成素材
 	 * @param url 回答的URL
 	 */
 	public void uploadMatZhiHu(String url){
+	
 		
+	//
+	List<DailyHotBasic> list = dailyHotRespository.listBySQL("select * from daily_hot_basic ");
+	//
 	/********** 获取到zhihu答案拼装后的WxContent*********/
 	Elements ss = CommonTools.getEleByAnswerUrl(url);
 	String wxContentRes = combineWxMat(ss);
 	
 	
 	/********** 获取作者名字*********/
-	
+//	String author = 
 	/********** 获取问题的标题*********/
 	
 	

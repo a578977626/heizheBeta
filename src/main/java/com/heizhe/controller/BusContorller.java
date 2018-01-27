@@ -1,5 +1,7 @@
 package com.heizhe.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -62,13 +64,14 @@ public class BusContorller {
 	
 	
 	@ResponseBody
-	@RequestMapping(value = "/saveHotDay", method = RequestMethod.GET)
+	@RequestMapping(value = "/testFunc", method = RequestMethod.GET)
 	public String saveHotDay(String mediaId) {
-		
-		DailyHotBasic  ba = new DailyHotBasic();
-		ba.setAnswerType("123");
-		ba.setAnswerUrl("123");
-		dailyHotRespository.save(ba);
+		List<DailyHotBasic> list = dailyHotRespository.listBySQL("select * from daily_hot_basic ");
+		System.out.println(list.size());
+//		DailyHotBasic  ba = new DailyHotBasic();
+//		ba.setAnswerType("123");
+//		ba.setAnswerUrl("123");
+//		dailyHotRespository.save(ba);
 		return mediaId;
 	}
 	

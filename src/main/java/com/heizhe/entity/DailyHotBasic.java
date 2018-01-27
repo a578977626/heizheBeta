@@ -1,5 +1,5 @@
 package com.heizhe.entity;
-
+import java.util.Date;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
@@ -30,6 +30,7 @@ public class DailyHotBasic implements Serializable{
 	private String summary;
 	private String dateInfo;
 	private String commentCount;
+	private Date createdDate;
 	/**
 	 * 可转载类型
 	 */
@@ -89,6 +90,11 @@ public class DailyHotBasic implements Serializable{
 	}
 	public void setAnswerType(String answerType) {
 		this.answerType = answerType;
+	}
+	public Date getCreatedDate() {
+	}
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
 	}
 	
 	
