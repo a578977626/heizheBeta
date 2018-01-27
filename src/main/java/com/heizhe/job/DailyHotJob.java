@@ -52,8 +52,9 @@ public class DailyHotJob {
 
 		/**
 		 * 重复的去掉，不保存
+		 * 关于匹配器的使用，用来做这种多字段的过滤是否存在不是太适合
 		 */
-		ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("question", "answerUrl", "author")
+		ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("id", "likedCount", "summary","dateInfo","commentCount","createdDate")
 				.withIncludeNullValues();
 		for (DailyHotBasic hot : pre10List) {
 			Example<DailyHotBasic> example = Example.of(hot, matcher);

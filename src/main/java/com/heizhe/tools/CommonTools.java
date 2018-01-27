@@ -56,10 +56,15 @@ public class CommonTools {
 	
 	/**
 	 * 调用日度热门接口获取热门答案基本信息
+	 * https://www.zhihu.com/node/ExploreAnswerListV2?params={"offset":5,"type":"day"}
+	 * 只能用GET，POST的话知乎会报错
 	 */
 	public static String getHotAnswerBasic(String params) throws HttpProcessException{
 
-		String url = ConsTantWx.DAILY_HOT_ANSTER_URL;
+		
+		//这个工具类很坑爹啊，GET请求还要自己转码
+		String paramed =  UrlUtil.getURLEncoderString(params);
+		String url = ConsTantWx.DAILY_HOT_ANSTER_URL+"?params="+paramed;
 		
 		Header[] headers 	= HttpHeader.custom()//此请求头是知乎问题页的接口的请求头
 				.userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.98 Safari/537.36 LBBROWSER")
@@ -73,14 +78,14 @@ public class CommonTools {
 				.other("X-Requested-With", "XMLHttpRequest")
 				.build();
 		
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("params", params);
+//		Map<String, Object> map = new HashMap<String, Object>();
+//		map.put("params", params);
 		
 		//插件式配置请求参数（网址、请求参数、编码、client）
 		HttpConfig config = HttpConfig.custom()
 				.headers(headers)	//设置headers，不需要时则无需设置
 				.url(url)					//设置请求的url
-				.map(map)			//设置请求参数，没有则无需设置
+//				.map(map)			//设置请求参数，没有则无需设置
 				.encoding("utf-8") //设置请求和返回编码，默认就是Charset.defaultCharset()
 //				.client(client)														//如果只是简单使用，无需设置，会自动获取默认的一个client对象
 				//.inenc("utf-8") 													//设置请求编码，如果请求返回一直，不需要再单独设置
@@ -91,7 +96,8 @@ public class CommonTools {
 				//.files(new String[]{"d:/1.txt","d:/2.txt"})					//上传的话，传递文件路径，一般还需map配置，设置服务器保存路径
 				;
 		
-		
+		Map mapww = config.map();
+		String uurl = config.url();
 		String result1 = HttpClientUtil.get(config);		//get请求
 		System.out.println(params);
 		return result1;
