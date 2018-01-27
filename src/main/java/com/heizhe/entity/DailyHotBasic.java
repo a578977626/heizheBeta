@@ -26,10 +26,10 @@ public class DailyHotBasic implements Serializable{
 	private String question;
 	private String answerUrl;
 	private String author;
-	private String likedCount;
+	private Integer likedCount;
 	private String summary;
 	private String dateInfo;
-	private String commentCount;
+	private Integer commentCount;
 	private Date createdDate;
 	/**
 	 * 可转载类型
@@ -61,12 +61,6 @@ public class DailyHotBasic implements Serializable{
 	public void setAuthor(String author) {
 		this.author = author;
 	}
-	public String getLikedCount() {
-		return likedCount;
-	}
-	public void setLikedCount(String likedCount) {
-		this.likedCount = likedCount;
-	}
 	public String getSummary() {
 		return summary;
 	}
@@ -79,12 +73,6 @@ public class DailyHotBasic implements Serializable{
 	public void setDateInfo(String dateInfo) {
 		this.dateInfo = dateInfo;
 	}
-	public String getCommentCount() {
-		return commentCount;
-	}
-	public void setCommentCount(String commentCount) {
-		this.commentCount = commentCount;
-	}
 	public String getAnswerType() {
 		return answerType;
 	}
@@ -96,6 +84,18 @@ public class DailyHotBasic implements Serializable{
 	}
 	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
+	}
+	public Integer getLikedCount() {
+		return likedCount;
+	}
+	public void setLikedCount(Integer likedCount) {
+		this.likedCount = likedCount;
+	}
+	public Integer getCommentCount() {
+		return commentCount;
+	}
+	public void setCommentCount(Integer commentCount) {
+		this.commentCount = commentCount;
 	}
 	
 	

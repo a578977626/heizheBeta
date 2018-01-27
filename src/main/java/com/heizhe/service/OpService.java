@@ -50,10 +50,6 @@ public class  OpService {
 	 */
 	public void uploadMatZhiHu(String url){
 	
-		
-	//
-	List<DailyHotBasic> list = dailyHotRespository.listBySQL("select * from daily_hot_basic ");
-	//
 	/********** 获取到zhihu答案拼装后的WxContent*********/
 	Elements ss = CommonTools.getEleByAnswerUrl(url);
 	String wxContentRes = combineWxMat(ss);
@@ -89,7 +85,78 @@ public class  OpService {
 	} catch (WxErrorException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
-	}}
+	}
+	}
+	
+	/**
+	 * 批量操作。
+	 * 生成3条文章的预览，并保存mediaId
+	 */
+	public String uploadMatToPreview(){
+		List<DailyHotBasic> list = dailyHotRespository.listBySQL("SELECT\r\n" + 
+				"	*\r\n" + 
+				"FROM\r\n" + 
+				"	daily_hot_basic\r\n" + 
+				"WHERE\r\n" + 
+				"	answer_type <> '禁止转载'\r\n" + 
+				//"AND to_days(created_date) = to_days(now())\r\n" + 
+				"ORDER BY\r\n" + 
+				"	liked_count DESC\r\n" + 
+				"LIMIT 3");
+		String mediaId = uploadMatZhiHuV2(list);
+		return mediaId;
+		
+	}
+	
+	/**
+	 * 批量上传素材到微信
+	 * @param url
+	 */
+	public String uploadMatZhiHuV2(List<DailyHotBasic> list){
+		WxMpMaterialNews wxMpMaterialNewsMultiple = new WxMpMaterialNews();
+		
+		for(Object obj : list){
+			DailyHotBasic basic = (DailyHotBasic) obj;
+			/********** 获取到zhihu答案拼装后的WxContent*********/
+			Elements ss = CommonTools.getEleByAnswerUrl(basic.getAnswerUrl());
+			String wxContentRes = combineWxMat(ss);
+			/********** 获取作者名字*********/
+			String author = basic.getAuthor();
+			/********** 获取问题的标题*********/
+			String title  = basic.getQuestion();
+			/********** 获取问题的summary*********/
+			String summary = basic.getSummary();
+			
+			//拼装成功后调用保存图文素材接口
+			
+			
+			WxMpMaterialNews.WxMpMaterialNewsArticle article = new WxMpMaterialNews.WxMpMaterialNewsArticle();
+			article.setAuthor(author);
+			//TODO 缩率图
+			//Y8Bjr0YiUQJigb3UR2WU-fRwkGZV43Z_2QWnmty47Qk  一个图片的mediaId和url
+			//http://mmbiz.qpic.cn/mmbiz_jpg/uDbxxbf4KbS0tibeDSFNo1ibN7w3qgegbce3uBMWx37gTuicUUkFV3QUWiaXZky4I4fblVFLia9UuQskNduayQCM6Dw/0?wx_fmt=jpeg 
+			article.setThumbMediaId("Y8Bjr0YiUQJigb3UR2WU-fRwkGZV43Z_2QWnmty47Qk");//这里有个缩率图TODO
+			article.setTitle(title);
+			article.setContent(wxContentRes);
+//			article.setContentSourceUrl("www");
+			article.setShowCoverPic(true);
+			article.setDigest(summary);
+			article.setShowCoverPic(false);
+			wxMpMaterialNewsMultiple.addArticle(article);
+		}
+		
+		try {
+			WxMpMaterialUploadResult suRes = wxService.getMaterialService().materialNewsUpload(wxMpMaterialNewsMultiple);
+			System.out.println(suRes.getErrMsg());
+			System.out.println(suRes.getErrCode());
+			System.out.println(suRes.getMediaId());
+		} catch (WxErrorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return "123";
+		}
 	
 	/**
 	 * 测试抓取数据

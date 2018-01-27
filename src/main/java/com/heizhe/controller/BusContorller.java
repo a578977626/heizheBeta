@@ -62,17 +62,16 @@ public class BusContorller {
 		return mediaId;
 	}
 	
-	
+	/**
+	 * test 专用方法
+	 * @param mediaId
+	 * @return
+	 */
 	@ResponseBody
 	@RequestMapping(value = "/testFunc", method = RequestMethod.GET)
 	public String saveHotDay(String mediaId) {
-		List<DailyHotBasic> list = dailyHotRespository.listBySQL("select * from daily_hot_basic ");
-		System.out.println(list.size());
-//		DailyHotBasic  ba = new DailyHotBasic();
-//		ba.setAnswerType("123");
-//		ba.setAnswerUrl("123");
-//		dailyHotRespository.save(ba);
-		return mediaId;
+		String uuu = opService.uploadMatToPreview();
+		return uuu;
 	}
 	
 

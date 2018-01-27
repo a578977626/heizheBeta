@@ -37,7 +37,7 @@ public class DailyHotJob {
 	 *             FileNotFoundException
 	 * 
 	 */
-	 @Scheduled(fixedDelay=TWO_HOUR)
+//	 @Scheduled(fixedDelay=TWO_HOUR)
 	public void getDailyHotJob() throws HttpProcessException, FileNotFoundException {
 		String pre5Source = CommonTools.getHotAnswerBasic(ConsTantWx.DAILY_HOTANSTER_1_TO_5);
 		String pre10Source = CommonTools.getHotAnswerBasic(ConsTantWx.DAILY_HOTANSTER_5_TO_10);
@@ -83,9 +83,9 @@ public class DailyHotJob {
 			dayHot.setAnswerType(answerType);
 			dayHot.setAnswerUrl(answerUrl);
 			dayHot.setAuthor(author);
-			dayHot.setCommentCount(commentCount);
+			dayHot.setCommentCount(Integer.valueOf(commentCount.substring(0, commentCount.length()-4)));
 			dayHot.setDateInfo(dateInfo);
-			dayHot.setLikedCount(likedCount);
+			dayHot.setLikedCount(Integer.valueOf(likedCount));
 			dayHot.setQuestion(question);
 			dayHot.setSummary(summary);
 			dayHot.setCreatedDate(new Date());
