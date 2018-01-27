@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.heizhe.entity.DailyHotBasic;
+import com.heizhe.rep.DailyHotRespository;
 import com.heizhe.service.OpService;
 
 @RestController
@@ -14,6 +16,9 @@ public class BusContorller {
 
 	@Autowired
 	private OpService opService;
+	
+	@Autowired
+   	private DailyHotRespository dailyHotRespository;
 
 	@ResponseBody
 	@RequestMapping(value = "/uploadMat001", method = RequestMethod.GET)
@@ -54,5 +59,18 @@ public class BusContorller {
 		opService.sendMessageNews(mediaId);
 		return mediaId;
 	}
+	
+	
+	@ResponseBody
+	@RequestMapping(value = "/saveHotDay", method = RequestMethod.GET)
+	public String saveHotDay(String mediaId) {
+		
+		DailyHotBasic  ba = new DailyHotBasic();
+		ba.setAnswerType("123");
+		ba.setAnswerUrl("123");
+		dailyHotRespository.save(ba);
+		return mediaId;
+	}
+	
 
 }

@@ -39,5 +39,11 @@ public class ConsTantWx {
 	 * 日度热门前5-10（参数）
 	 */
 	public static String DAILY_HOTANSTER_5_TO_10 = "{\"offset\":5,\"type\":\"day\"}";
+	
+	
+	/**
+	 * 知乎域名 https://www.zhihu.com/
+	 */
+	public static String ZHIHU_OFFCIAL_DOMAIN  = "https://www.zhihu.com/";
 }
 
