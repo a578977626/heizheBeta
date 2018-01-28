@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.List;
 
+import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -99,7 +100,7 @@ public class  OpService {
 				"	daily_hot_basic\r\n" + 
 				"WHERE\r\n" + 
 				"	answer_type <> '禁止转载'\r\n" + 
-				//"AND to_days(created_date) = to_days(now())\r\n" + 
+				"AND to_days(created_date) = to_days(now())\r\n" + 
 				"ORDER BY\r\n" + 
 				"	liked_count DESC\r\n" + 
 				"LIMIT 3");
@@ -120,12 +121,18 @@ public class  OpService {
 			/********** 获取到zhihu答案拼装后的WxContent*********/
 			Elements ss = CommonTools.getEleByAnswerUrl(basic.getAnswerUrl());
 			String wxContentRes = combineWxMat(ss);
+			/************暂时不支持视频素材***********************/
+			if(wxContentRes.equals("vedio")){
+				//TODO
+				break;
+			}
+			/************暂时不支持视频素材***********************/
 			/********** 获取作者名字*********/
 			String author = basic.getAuthor();
 			/********** 获取问题的标题*********/
 			String title  = basic.getQuestion();
 			/********** 获取问题的summary*********/
-			String summary = basic.getSummary();
+//			String summary = basic.getSummary();
 			
 			//拼装成功后调用保存图文素材接口
 			
@@ -140,7 +147,7 @@ public class  OpService {
 			article.setContent(wxContentRes);
 //			article.setContentSourceUrl("www");
 			article.setShowCoverPic(true);
-			article.setDigest(summary);
+//			article.setDigest(summary);
 			article.setShowCoverPic(false);
 			wxMpMaterialNewsMultiple.addArticle(article);
 		}
@@ -150,12 +157,15 @@ public class  OpService {
 			System.out.println(suRes.getErrMsg());
 			System.out.println(suRes.getErrCode());
 			System.out.println(suRes.getMediaId());
+			if(StringUtil.isBlank(suRes.getMediaId())){
+				return suRes.getMediaId();
+			}
 		} catch (WxErrorException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return "123";
+		//01-28 mediaId Y8Bjr0YiUQJigb3UR2WU-WEmUQC5kgKLvYcb7nan0Pk
+		return "00";
 		}
 	
 	/**
@@ -228,6 +238,12 @@ public class  OpService {
 		StringBuffer wxContent = new StringBuffer();
 		
 		for(Element ele : ss){
+			/************暂时不支持视频素材***********************/
+			if("div".equals(ele.tagName())){
+				return "veido";
+			}
+			/************暂时不支持视频素材***********************/
+			
 			/**********     如果是图片就要下载下来并且拼装         *********/
 			if("p".equals(ele.tagName())){
 				String pTag = ele.toString();

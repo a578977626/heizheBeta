@@ -62,6 +62,19 @@ public class BusContorller {
 		return mediaId;
 	}
 	
+	
+	/**
+	 * 生成3条文章的预览，并保存mediaId
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/uploadMatToPreview", method = RequestMethod.GET)
+	public String uploadMatToPreview() {
+		String mediaId = opService.uploadMatToPreview();
+		return mediaId;
+	} 
+	
+	
 	/**
 	 * test 专用方法
 	 * @param mediaId

@@ -32,6 +32,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<DailyHotBasic> listBySQL(String sql) {
-		return entityManager.createNativeQuery(sql).getResultList();
+		return entityManager.createNativeQuery(sql, DailyHotBasic.class).getResultList();
+//		return entityManager.createNativeQuery(sql).getResultList();
 	}
 }
