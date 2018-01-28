@@ -2,12 +2,8 @@ package com.heizhe.base;
 
 import java.io.Serializable;
 import java.util.List;
-
 import javax.persistence.EntityManager;
-
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
-
-import com.heizhe.entity.DailyHotBasic;
 
 /**
  * SimpleJpaRepository的代替品
@@ -29,10 +25,16 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 	}
 
 	// 通过EntityManager来完成查询
+	/**
+	 * 这个设计是一个比较通用的设计。是一个同时享受JPa的查询方法，还支持自己拓展的一个设计。
+	 * 用BaseImp来实现。
+	 * 以后新增的每个实体类都享受此方法。（被我改造加了Class<?> T效果更好了点）
+	 * 详见：
+	 * @url https://www.jianshu.com/p/73f48095a7bf# 
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<DailyHotBasic> listBySQL(String sql) {
-		return entityManager.createNativeQuery(sql, DailyHotBasic.class).getResultList();
-//		return entityManager.createNativeQuery(sql).getResultList();
+	public List<T> listBySQL(String sql ,Class<?> T) {
+		return entityManager.createNativeQuery(sql, T).getResultList();
 	}
 }

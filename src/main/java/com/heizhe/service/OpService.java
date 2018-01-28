@@ -103,7 +103,7 @@ public class  OpService {
 				"AND to_days(created_date) = to_days(now())\r\n" + 
 				"ORDER BY\r\n" + 
 				"	liked_count DESC\r\n" + 
-				"LIMIT 3");
+				"LIMIT 3",DailyHotBasic.class);
 		String mediaId = uploadMatZhiHuV2(list);
 		return mediaId;
 		
@@ -134,13 +134,9 @@ public class  OpService {
 			/********** 获取问题的summary*********/
 //			String summary = basic.getSummary();
 			
-			//拼装成功后调用保存图文素材接口
-			
-			
 			WxMpMaterialNews.WxMpMaterialNewsArticle article = new WxMpMaterialNews.WxMpMaterialNewsArticle();
 			article.setAuthor(author);
-			//TODO 缩率图
-			//第一篇要用16:9图
+			//第一篇要用16:9封面图
 			if(i>1){
 				article.setThumbMediaId("Y8Bjr0YiUQJigb3UR2WU-a9A5agn7F6OB2xrAFktuek");//1:1图
 			}else{
@@ -155,12 +151,14 @@ public class  OpService {
 			wxMpMaterialNewsMultiple.addArticle(article);
 		}
 		
+		
+		//拼装成功后调用保存图文素材接口
 		try {
 			WxMpMaterialUploadResult suRes = wxService.getMaterialService().materialNewsUpload(wxMpMaterialNewsMultiple);
 			System.out.println(suRes.getErrMsg());
 			System.out.println(suRes.getErrCode());
 			System.out.println(suRes.getMediaId());
-			if(StringUtil.isBlank(suRes.getMediaId())){
+			if(!StringUtil.isBlank(suRes.getMediaId())){
 				return suRes.getMediaId();
 			}
 		} catch (WxErrorException e) {
