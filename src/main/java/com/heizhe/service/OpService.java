@@ -115,9 +115,9 @@ public class  OpService {
 	 */
 	public String uploadMatZhiHuV2(List<DailyHotBasic> list){
 		WxMpMaterialNews wxMpMaterialNewsMultiple = new WxMpMaterialNews();
-		
-		for(Object obj : list){
-			DailyHotBasic basic = (DailyHotBasic) obj;
+
+		for(int i = 1; i < list.size(); i++){
+			DailyHotBasic basic = list.get(i);
 			/********** 获取到zhihu答案拼装后的WxContent*********/
 			Elements ss = CommonTools.getEleByAnswerUrl(basic.getAnswerUrl());
 			String wxContentRes = combineWxMat(ss);
@@ -140,9 +140,12 @@ public class  OpService {
 			WxMpMaterialNews.WxMpMaterialNewsArticle article = new WxMpMaterialNews.WxMpMaterialNewsArticle();
 			article.setAuthor(author);
 			//TODO 缩率图
-			//Y8Bjr0YiUQJigb3UR2WU-fRwkGZV43Z_2QWnmty47Qk  一个图片的mediaId和url
-			//http://mmbiz.qpic.cn/mmbiz_jpg/uDbxxbf4KbS0tibeDSFNo1ibN7w3qgegbce3uBMWx37gTuicUUkFV3QUWiaXZky4I4fblVFLia9UuQskNduayQCM6Dw/0?wx_fmt=jpeg 
-			article.setThumbMediaId("Y8Bjr0YiUQJigb3UR2WU-fRwkGZV43Z_2QWnmty47Qk");//这里有个缩率图TODO
+			//第一篇要用16:9图
+			if(i>1){
+				article.setThumbMediaId("Y8Bjr0YiUQJigb3UR2WU-a9A5agn7F6OB2xrAFktuek");//1:1图
+			}else{
+				article.setThumbMediaId("Y8Bjr0YiUQJigb3UR2WU-cMgt0WWlDc9irMsUSxyFs0");//16:9图
+			}
 			article.setTitle(title);
 			article.setContent(wxContentRes);
 //			article.setContentSourceUrl("www");
