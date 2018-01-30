@@ -2,12 +2,14 @@ package com.heizhe.tools;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.http.Header;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 import com.arronlong.httpclientutil.HttpClientUtil;
@@ -41,9 +43,25 @@ public class CommonTools {
 	public static Elements getEleByAnswerUrl (String url){
 		Document zhihuSource = getDocByUrl(url);
 		Elements zhihuConEles  = zhihuSource.getElementsByClass("RichText CopyrightRichText-richText");
-		
 		Element zhihuConEle = zhihuConEles.first();
-		Elements ss = zhihuConEle.children(); 
+		/**
+		 * 获取过来RichText CopyrightRichText-richText内容有时候根本是不规则的,有的带'<p>'标签，有的不带直接是文本.
+		 * 带的好处理，直接zhihuConEle.children()就是结果了
+		 * 不带的就GG
+		 * 只能用childNodes()遍历，如果是文本就加上'<p>'标签，不是就按elemment处理
+		 * 重新拼装一遍形成最后结果
+		 */
+		Elements ss = new Elements();
+		List<Node> ln = zhihuConEle.childNodes();//此方法拯救了我
+		for(Node no :ln){
+			String html = no.outerHtml();
+			if(no.nodeName().equals("#text")){
+				ss.add(new Element("p").text(html));
+			}else{
+				ss.add(Jsoup.parse(html).body().children().first());
+			}
+		}
+//		Elements ss = zhihuConEle.children(); 
 		return ss;
 	}
 	

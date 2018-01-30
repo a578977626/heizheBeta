@@ -3,6 +3,7 @@ package com.heizhe.service;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.Date;
 import java.util.List;
 
 import org.jsoup.helper.StringUtil;
@@ -17,8 +18,11 @@ import com.arronlong.httpclientutil.common.HttpConfig;
 import com.arronlong.httpclientutil.exception.HttpProcessException;
 import com.heizhe.constant.ConsTantWx;
 import com.heizhe.entity.DailyHotBasic;
+import com.heizhe.entity.MateriaArticle;
 import com.heizhe.rep.DailyHotRespository;
+import com.heizhe.rep.MaterialArticleRespository;
 import com.heizhe.tools.CommonTools;
+import com.heizhe.tools.LogUtil;
 import com.heizhe.tools.UrlTools;
 
 import me.chanjar.weixin.common.api.WxConsts;
@@ -44,6 +48,9 @@ public class  OpService {
 	
 	@Autowired
 	private DailyHotRespository dailyHotRespository;
+	
+	@Autowired
+	MaterialArticleRespository matArtRespository;
 	
 	/**
 	 * 根据URL生成素材
@@ -89,6 +96,11 @@ public class  OpService {
 	}
 	}
 	
+	public String uploadtest(){
+		Elements ss = CommonTools.getEleByAnswerUrl("https://www.zhihu.com/question/28326061");
+		return "00";
+	}
+	
 	/**
 	 * 批量操作。
 	 * 生成3条文章的预览，并保存mediaId
@@ -104,6 +116,8 @@ public class  OpService {
 				"ORDER BY\r\n" + 
 				"	liked_count DESC\r\n" + 
 				"LIMIT 3",DailyHotBasic.class);
+//		LogUtil.info(list.get(0).getId().toString());
+//		return list.get(0).getAnswerUrl();
 		String mediaId = uploadMatZhiHuV2(list);
 		return mediaId;
 		
@@ -116,17 +130,21 @@ public class  OpService {
 	public String uploadMatZhiHuV2(List<DailyHotBasic> list){
 		WxMpMaterialNews wxMpMaterialNewsMultiple = new WxMpMaterialNews();
 
-		for(int i = 1; i < list.size(); i++){
+		for(int i = 0; i < list.size(); i++){
+			LogUtil.info("查询到的raw资源有"+String.valueOf(list.size()));
 			DailyHotBasic basic = list.get(i);
 			/********** 获取到zhihu答案拼装后的WxContent*********/
 			Elements ss = CommonTools.getEleByAnswerUrl(basic.getAnswerUrl());
 			String wxContentRes = combineWxMat(ss);
+			saveMateriaArticle(wxContentRes,basic);
 			/************暂时不支持视频素材***********************/
 			if(wxContentRes.equals("vedio")){
 				//TODO
+				LogUtil.info("有一条不合格");
 				break;
 			}
 			/************暂时不支持视频素材***********************/
+			
 			/********** 获取作者名字*********/
 			String author = basic.getAuthor();
 			/********** 获取问题的标题*********/
@@ -137,7 +155,7 @@ public class  OpService {
 			WxMpMaterialNews.WxMpMaterialNewsArticle article = new WxMpMaterialNews.WxMpMaterialNewsArticle();
 			article.setAuthor(author);
 			//第一篇要用16:9封面图
-			if(i>1){
+			if(i>0){
 				article.setThumbMediaId("Y8Bjr0YiUQJigb3UR2WU-a9A5agn7F6OB2xrAFktuek");//1:1图
 			}else{
 				article.setThumbMediaId("Y8Bjr0YiUQJigb3UR2WU-cMgt0WWlDc9irMsUSxyFs0");//16:9图
@@ -159,6 +177,7 @@ public class  OpService {
 			System.out.println(suRes.getErrCode());
 			System.out.println(suRes.getMediaId());
 			if(!StringUtil.isBlank(suRes.getMediaId())){
+				updateMatrialArticleStatus(list,suRes.getMediaId());
 				return suRes.getMediaId();
 			}
 		} catch (WxErrorException e) {
@@ -166,9 +185,11 @@ public class  OpService {
 			e.printStackTrace();
 		}
 		//01-28 mediaId Y8Bjr0YiUQJigb3UR2WU-WEmUQC5kgKLvYcb7nan0Pk
+		//01-29 mediaId Y8Bjr0YiUQJigb3UR2WU-duf3alY1hWIMvul3sWkACY
 		return "00";
 		}
 	
+
 	/**
 	 * 测试抓取数据
 	 * @param url
@@ -286,6 +307,36 @@ public class  OpService {
 			}
 		}
 		return wxContent.toString();
+	}
+	
+	
+	/**
+	 * 保存上传图文内容（此时未正式上传成功）
+	 * @param wxContent 上传的微信图文content内容
+	 * @param basic 
+	 */
+	private void saveMateriaArticle(String wxContent, DailyHotBasic basic){
+		MateriaArticle mA = new MateriaArticle();
+		mA.setArticleContent(wxContent);
+		mA.setBasicId(basic.getId());
+		mA.setBasicUrl(basic.getAnswerUrl());
+		mA.setCreated(new Date());
+		mA.setUploadStatus("0");
+		
+		matArtRespository.save(mA);
+		LogUtil.info("保存MatArt成功");
+	}
+	
+	/**
+	 * 正确上传后更新matArt表状态与meidiaId
+	 * @param list
+	 * @param mediaId
+	 */
+	private void updateMatrialArticleStatus(List<DailyHotBasic> list, String mediaId) {
+		for(DailyHotBasic basic : list){
+			 matArtRespository.updateStatusAndMediaByUrl("1", mediaId, basic.getId());
+			 LogUtil.info("上传并Update成功");
+		}
 	}
 	
 }

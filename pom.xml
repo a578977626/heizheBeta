@@ -138,8 +138,8 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
 		</dependency>
-		
 		<!-- httpclientTools APP -->
+		
 	<dependency>
 		<groupId>com.github.binarywang</groupId>
 		<artifactId>weixin-java-mp</artifactId>

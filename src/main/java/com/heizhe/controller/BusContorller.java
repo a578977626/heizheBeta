@@ -83,7 +83,7 @@ public class BusContorller {
 	@ResponseBody
 	@RequestMapping(value = "/testFunc", method = RequestMethod.GET)
 	public String saveHotDay(String mediaId) {
-		String uuu = opService.uploadMatToPreview();
+		String uuu = opService.uploadtest();
 		return uuu;
 	}
 	
