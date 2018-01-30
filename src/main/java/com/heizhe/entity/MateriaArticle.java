@@ -49,6 +49,12 @@ public class MateriaArticle implements Serializable{
 	 * dailyHotSourceUrl 答案的url
 	 */
 	private String basicUrl;
+	/**
+	 * 平台
+	 */
+	private String platform;
+	
+	
 	public Long getId() {
 		return id;
 	}
@@ -91,7 +97,12 @@ public class MateriaArticle implements Serializable{
 	public void setBasicUrl(String basicUrl) {
 		this.basicUrl = basicUrl;
 	}
-	
+	public String getPlatform() {
+		return platform;
+	}
+	public void setPlatform(String platform) {
+		this.platform = platform;
+	}
 	
 	
 }

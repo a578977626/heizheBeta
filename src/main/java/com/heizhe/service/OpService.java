@@ -135,13 +135,17 @@ public class  OpService {
 			DailyHotBasic basic = list.get(i);
 			/********** 获取到zhihu答案拼装后的WxContent*********/
 			Elements ss = CommonTools.getEleByAnswerUrl(basic.getAnswerUrl());
+			if(ss.size()<1){
+				LogUtil.info("有一条不合格,访问要登录");
+				continue;
+			}
 			String wxContentRes = combineWxMat(ss);
 			saveMateriaArticle(wxContentRes,basic);
 			/************暂时不支持视频素材***********************/
 			if(wxContentRes.equals("vedio")){
 				//TODO
-				LogUtil.info("有一条不合格");
-				break;
+				LogUtil.info("有一条不合格,有视频内容");
+				continue;
 			}
 			/************暂时不支持视频素材***********************/
 			
@@ -151,6 +155,9 @@ public class  OpService {
 			String title  = basic.getQuestion();
 			/********** 获取问题的summary*********/
 //			String summary = basic.getSummary();
+			
+			/********** 最后的content拼装底部引用部分*********/
+			wxContentRes = wxContentRes + ConsTantWx.QOUTE_TAG_P1 + author + ConsTantWx.QUOTE_TAG_P2 + basic.getAnswerUrl() +ConsTantWx.QUOTE_TAG_P3;
 			
 			WxMpMaterialNews.WxMpMaterialNewsArticle article = new WxMpMaterialNews.WxMpMaterialNewsArticle();
 			article.setAuthor(author);
@@ -255,7 +262,11 @@ public class  OpService {
 	}}
 	
 	
-	
+	/**
+	 * 拼装微信Content
+	 * @param ss
+	 * @return
+	 */
 	private String combineWxMat(Elements ss){
 		StringBuffer wxContent = new StringBuffer();
 		
@@ -268,8 +279,9 @@ public class  OpService {
 			
 			/**********     如果是图片就要下载下来并且拼装         *********/
 			if("p".equals(ele.tagName())){
+				ele.attr("style", ConsTantWx.P_STYLE_COMMON);
 				String pTag = ele.toString();
-				System.out.println("段落"+ele.toString());
+//				System.out.println("段落"+ele.toString());
 				wxContent.append(pTag);
 			}
 			
@@ -322,6 +334,7 @@ public class  OpService {
 		mA.setBasicUrl(basic.getAnswerUrl());
 		mA.setCreated(new Date());
 		mA.setUploadStatus("0");
+		mA.setPlatform(ConsTantWx.WORD_ZHIHU);
 		
 		matArtRespository.save(mA);
 		LogUtil.info("保存MatArt成功");

@@ -35,6 +35,10 @@ public class DailyHotBasic implements Serializable{
 	 * 可转载类型
 	 */
 	private String answerType;
+	/**
+	 * 平台
+	 */
+	private String platform;
 	
 	
 	public Long getId() {
@@ -96,6 +100,12 @@ public class DailyHotBasic implements Serializable{
 	}
 	public void setCommentCount(Integer commentCount) {
 		this.commentCount = commentCount;
+	}
+	public String getPlatform() {
+		return platform;
+	}
+	public void setPlatform(String platform) {
+		this.platform = platform;
 	}
 	
 	

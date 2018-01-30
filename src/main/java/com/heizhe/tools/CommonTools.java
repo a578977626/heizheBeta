@@ -42,7 +42,16 @@ public class CommonTools {
 	 */
 	public static Elements getEleByAnswerUrl (String url){
 		Document zhihuSource = getDocByUrl(url);
+		/**
+		 * 又发现一种新情况
+		 * 就是有些链接是要登录可见的，可能是问题较敏感吧
+		 * 那就得处理一下了
+		 */
 		Elements zhihuConEles  = zhihuSource.getElementsByClass("RichText CopyrightRichText-richText");
+		if(zhihuConEles.size()<1){
+			Elements ss = new Elements();
+			return ss;
+		}
 		Element zhihuConEle = zhihuConEles.first();
 		/**
 		 * 获取过来RichText CopyrightRichText-richText内容有时候根本是不规则的,有的带'<p>'标签，有的不带直接是文本.
