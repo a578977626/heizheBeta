@@ -74,7 +74,6 @@ public class  OpService {
 	WxMpMaterialNews wxMpMaterialNewsMultiple = new WxMpMaterialNews();
 	WxMpMaterialNews.WxMpMaterialNewsArticle article = new WxMpMaterialNews.WxMpMaterialNewsArticle();
 	article.setAuthor("author");
-	//TODO 缩率图
 	//Y8Bjr0YiUQJigb3UR2WU-fRwkGZV43Z_2QWnmty47Qk  一个图片的mediaId和url
 	//http://mmbiz.qpic.cn/mmbiz_jpg/uDbxxbf4KbS0tibeDSFNo1ibN7w3qgegbce3uBMWx37gTuicUUkFV3QUWiaXZky4I4fblVFLia9UuQskNduayQCM6Dw/0?wx_fmt=jpeg 
 	article.setThumbMediaId("Y8Bjr0YiUQJigb3UR2WU-fRwkGZV43Z_2QWnmty47Qk");//这里有个缩率图TODO
@@ -91,7 +90,6 @@ public class  OpService {
 		System.out.println(suRes.getErrCode());
 		System.out.println(suRes.getMediaId());
 	} catch (WxErrorException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
 	}
@@ -106,16 +104,7 @@ public class  OpService {
 	 * 生成3条文章的预览，并保存mediaId
 	 */
 	public String uploadMatToPreview(){
-		List<DailyHotBasic> list = dailyHotRespository.listBySQL("SELECT\r\n" + 
-				"	*\r\n" + 
-				"FROM\r\n" + 
-				"	daily_hot_basic\r\n" + 
-				"WHERE\r\n" + 
-				"	answer_type <> '禁止转载'\r\n" + 
-				"AND to_days(created_date) = to_days(now())\r\n" + 
-				"ORDER BY\r\n" + 
-				"	liked_count DESC\r\n" + 
-				"LIMIT 3",DailyHotBasic.class);
+		List<DailyHotBasic> list = dailyHotRespository.listBySQL("SELECT * FROM daily_hot_basic WHERE answer_type <> '禁止转载' AND to_days(created_date) = to_days(now()) ORDER BY liked_count DESC LIMIT 3",DailyHotBasic.class);
 //		LogUtil.info(list.get(0).getId().toString());
 //		return list.get(0).getAnswerUrl();
 		String mediaId = uploadMatZhiHuV2(list);
@@ -131,6 +120,7 @@ public class  OpService {
 		WxMpMaterialNews wxMpMaterialNewsMultiple = new WxMpMaterialNews();
 
 		for(int i = 0; i < list.size(); i++){
+			//TODO 做之前 是不是要检查子表了有数据，是否要重新抓取
 			LogUtil.info("查询到的raw资源有"+String.valueOf(list.size()));
 			DailyHotBasic basic = list.get(i);
 			/********** 获取到zhihu答案拼装后的WxContent*********/
@@ -140,7 +130,7 @@ public class  OpService {
 				continue;
 			}
 			String wxContentRes = combineWxMat(ss);
-			saveMateriaArticle(wxContentRes,basic);
+			
 			/************暂时不支持视频素材***********************/
 			if(wxContentRes.equals("vedio")){
 				//TODO
@@ -168,9 +158,12 @@ public class  OpService {
 				article.setThumbMediaId("Y8Bjr0YiUQJigb3UR2WU-cMgt0WWlDc9irMsUSxyFs0");//16:9图
 			}
 			article.setTitle(title);
+			/**
+			 * Wxcontent最后上传之前先保存到表里面
+			 */
+			saveMateriaArticle(wxContentRes,basic);
 			article.setContent(wxContentRes);
 //			article.setContentSourceUrl("www");
-			article.setShowCoverPic(true);
 //			article.setDigest(summary);
 			article.setShowCoverPic(false);
 			wxMpMaterialNewsMultiple.addArticle(article);
@@ -185,10 +178,10 @@ public class  OpService {
 			System.out.println(suRes.getMediaId());
 			if(!StringUtil.isBlank(suRes.getMediaId())){
 				updateMatrialArticleStatus(list,suRes.getMediaId());
+//				wxService.getMassMessageService().massMessagePreview(wxMpMassPreviewMessage)
 				return suRes.getMediaId();
 			}
 		} catch (WxErrorException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		//01-28 mediaId Y8Bjr0YiUQJigb3UR2WU-WEmUQC5kgKLvYcb7nan0Pk
@@ -234,7 +227,6 @@ public class  OpService {
 		try {
 			wxService.getKefuService().sendKefuMessage(message);
 		} catch (WxErrorException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
   }
@@ -257,7 +249,6 @@ public class  OpService {
 		WxMpMassSendResult massResult = wxService.getMassMessageService()
 		  .massGroupMessageSend(massMessage);
 	} catch (WxErrorException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}}
 	
@@ -269,6 +260,10 @@ public class  OpService {
 	 */
 	private String combineWxMat(Elements ss){
 		StringBuffer wxContent = new StringBuffer();
+		/**
+		 * 加入头部求关注信息
+		 */
+		wxContent.append(ConsTantWx.HEAD_TAG_PART);
 		
 		for(Element ele : ss){
 			/************暂时不支持视频素材***********************/
@@ -299,7 +294,6 @@ public class  OpService {
 					try {
 						HttpClientUtil.down(HttpConfig.custom().url(imgUrl).out(new FileOutputStream(file)));
 					} catch (FileNotFoundException | HttpProcessException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -310,7 +304,6 @@ public class  OpService {
 					wxUrl = imageRes.getUrl();
 					System.out.println("upload to WeChat"+wxUrl);
 				} catch (WxErrorException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				if(!("".equals(wxUrl))){

@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -25,6 +27,8 @@ public class DailyHotJob {
 
 	public final static long HALF_HOUR = 60 * 30 * 1000;
 
+	public final static long ONE_HOUR = 60 * 60 * 1 * 1000;
+	
 	public final static long TWO_HOUR = 60 * 60 * 2 * 1000;
 
 	@Autowired
@@ -37,7 +41,7 @@ public class DailyHotJob {
 	 *             FileNotFoundException
 	 * 
 	 */
-	 @Scheduled(fixedDelay=TWO_HOUR)
+	 @Scheduled(fixedDelay=ONE_HOUR)
 	public void getDailyHotJob() throws HttpProcessException, FileNotFoundException {
 		String pre5Source = CommonTools.getHotAnswerBasic(ConsTantWx.DAILY_HOTANSTER_1_TO_5);
 		String pre10Source = CommonTools.getHotAnswerBasic(ConsTantWx.DAILY_HOTANSTER_5_TO_10);
@@ -51,14 +55,16 @@ public class DailyHotJob {
 		pre10List.addAll(pre5List);
 
 		/**
-		 * 重复的去掉，不保存
+		 * 重复的更新点赞数，不重复的直接保存
 		 * 关于匹配器的使用，用来做这种多字段的过滤是否存在不是太适合
 		 */
 		ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("id", "likedCount", "summary","dateInfo","commentCount","createdDate")
 				.withIncludeNullValues();
 		for (DailyHotBasic hot : pre10List) {
 			Example<DailyHotBasic> example = Example.of(hot, matcher);
-			if (!dailyHotRespository.exists(example)) {
+			if (dailyHotRespository.exists(example)) {
+				dailyHotRespository.updateLikeCountByUrl(hot.getLikedCount(), hot.getAnswerUrl());
+			}else{
 				dailyHotRespository.save(hot);
 			}
 		}
@@ -83,7 +89,10 @@ public class DailyHotJob {
 			dayHot.setAnswerType(answerType);
 			dayHot.setAnswerUrl(answerUrl);
 			dayHot.setAuthor(author);
-			dayHot.setCommentCount(Integer.valueOf(commentCount.substring(0, commentCount.length()-4)));
+			/**
+			 * 当没有评论的时候知乎返回的是‘添加评论’
+			 */
+			dayHot.setCommentCount("添加评论".equals(commentCount)?0:Integer.valueOf(commentCount.substring(0, commentCount.length()-4)));
 			dayHot.setDateInfo(dateInfo);
 			dayHot.setLikedCount(Integer.valueOf(likedCount));
 			dayHot.setQuestion(question);
