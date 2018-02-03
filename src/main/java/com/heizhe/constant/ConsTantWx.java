@@ -45,6 +45,16 @@ public class ConsTantWx {
 	 */
 	public static String DAILY_HOTANSTER_5_TO_10 = "{\"offset\":5,\"type\":\"day\"}";
 	
+	/**
+	 * 月度热门前5（参数）{"offset":0,"type":"month"}
+	 */
+	public static String MONTH_HOTANSTER_1_TO_5 = "{\"offset\":0,\"type\":\"month\"}";
+	
+	/**
+	 * 月度热门前5-10（参数）{"offset":5,"type":"month"}
+	 */
+	public static String MONTH_HOTANSTER_5_TO_10 = "{\"offset\":5,\"type\":\"month\"}";
+	
 	
 	/**
 	 * 知乎域名 https://www.zhihu.com/
@@ -78,5 +88,10 @@ public class ConsTantWx {
 	 */
 	
 	public static String HEAD_TAG_PART = "<section style=\"background-color: rgb(255, 255, 255);box-sizing: border-box;\"><section class=\"\" style=\"box-sizing: border-box;\" powered-by=\"xiumi.us\"><section class=\"\" style=\"margin-top: 8px;margin-right: 0%;margin-left: 30%;line-height: 1em;text-align: center;box-sizing: border-box;\"><section class=\"\" style=\"width: 0px;display: inline-block;vertical-align: bottom;border-bottom: 13px solid rgb(0, 0, 0);border-left: 13px solid transparent !important;border-right: 13px solid transparent !important;box-sizing: border-box;\"></section></section></section><section class=\"\" style=\"box-sizing: border-box;\" powered-by=\"xiumi.us\"><section class=\"\" style=\"margin-right: 0%;margin-left: 0%;box-sizing: border-box;\"><section class=\"\" style=\"display: inline-block;width: 100%;vertical-align: top;background-image: url(&quot;http://mmbiz.qpic.cn/mmbiz_gif/uDbxxbf4KbTEuSLBwW8ArIE20HvbmusZ9HuibhtgPO84ic9SoqQbyMh2Iw9zTHVGHo9U83VtibkcgibJBWibpQ3MYaw/0?wx_fmt=gif&quot;);background-position: 0% 0%;background-repeat: repeat;background-size: 103.933%;background-attachment: scroll;background-color: rgb(254, 255, 255);box-sizing: border-box;\"><section class=\"\" style=\"box-sizing: border-box;\" powered-by=\"xiumi.us\"><section class=\"\" style=\"box-sizing: border-box;\"><section class=\"\" style=\"display: inline-block;vertical-align: top;width: 80%;box-sizing: border-box;\"><section class=\"\" style=\"box-sizing: border-box;\" powered-by=\"xiumi.us\"><section class=\"\" style=\"margin: 5px 0%;box-sizing: border-box;\"><section class=\"\" style=\"color: rgb(255, 255, 255);font-size: 14px;line-height: 1.6;padding-right: 10px;padding-left: 10px;box-sizing: border-box;\"><p style=\"box-sizing: border-box;\">没想到你居然看完了这个求关注进度条</p></section></section></section></section><section class=\"\" style=\"display: inline-block;vertical-align: top;width: 20%;box-sizing: border-box;\"><section class=\"\" style=\"box-sizing: border-box;\" powered-by=\"xiumi.us\"><section class=\"\" style=\"text-align: center;margin-top: 5px;margin-right: 0%;margin-left: 0%;font-size: 15px;box-sizing: border-box;\"><section class=\"\" style=\"max-width: 100%;vertical-align: middle;display: inline-block;width: 90%;overflow: hidden !important;box-sizing: border-box;\"><img data-ratio=\"0.34\" data-src=\"https://mmbiz.qpic.cn/mmbiz_png/uDbxxbf4KbTEuSLBwW8ArIE20HvbmusZjpmBl6hH0SCC5icS58FHKFQN1HA9BFiaNFekfBRSsAvWCVia3aSbfW2lQ/640?wx_fmt=png\" data-type=\"png\" data-w=\"100\" style=\"vertical-align: middle; box-sizing: border-box; width: 100% !important; height: auto !important; visibility: visible !important;\" width=\"100%\" _width=\"100%\" class=\"\" src=\"https://mmbiz.qpic.cn/mmbiz_png/uDbxxbf4KbTEuSLBwW8ArIE20HvbmusZjpmBl6hH0SCC5icS58FHKFQN1HA9BFiaNFekfBRSsAvWCVia3aSbfW2lQ/640?wx_fmt=png&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1\" data-fail=\"0\"></section></section></section></section></section></section></section></section></section></section>";
+
+	/**
+	 * cxb's openID
+	 */
+	public static String CXB_OPENID = "o14cB1mSBkyq4PCk3jLXnrnSui2g";
 }
 

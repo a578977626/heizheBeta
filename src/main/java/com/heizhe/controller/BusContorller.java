@@ -74,6 +74,16 @@ public class BusContorller {
 		return mediaId;
 	} 
 	
+	/**
+	 * 根据mediaId预览
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/previewByMediaId", method = RequestMethod.GET)
+	public String previewByMediaId(String mediaId) {
+		 opService.priviewByMediaId(mediaId);
+		return "可能成功了吧";
+	} 
 	
 	/**
 	 * test 专用方法

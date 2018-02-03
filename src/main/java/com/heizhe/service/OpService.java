@@ -28,6 +28,7 @@ import com.heizhe.tools.UrlTools;
 import me.chanjar.weixin.common.api.WxConsts;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
+import me.chanjar.weixin.mp.bean.WxMpMassPreviewMessage;
 import me.chanjar.weixin.mp.bean.WxMpMassTagMessage;
 import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
 import me.chanjar.weixin.mp.bean.material.WxMediaImgUploadResult;
@@ -184,8 +185,6 @@ public class  OpService {
 		} catch (WxErrorException e) {
 			e.printStackTrace();
 		}
-		//01-28 mediaId Y8Bjr0YiUQJigb3UR2WU-WEmUQC5kgKLvYcb7nan0Pk
-		//01-29 mediaId Y8Bjr0YiUQJigb3UR2WU-duf3alY1hWIMvul3sWkACY
 		return "00";
 		}
 	
@@ -239,6 +238,7 @@ public class  OpService {
 	
 	WxMpMassTagMessage massMessage = new WxMpMassTagMessage();
     massMessage.setMsgType(WxConsts.MASS_MSG_NEWS);
+    //TODO 这个参数待验证
     massMessage.setSendIgnoreReprint(true);//文章被判定为转载时，继续进行群发操作
     massMessage.setMediaId(mediaId);
     
@@ -248,7 +248,14 @@ public class  OpService {
     try {
 		WxMpMassSendResult massResult = wxService.getMassMessageService()
 		  .massGroupMessageSend(massMessage);
+		/*
+		 * 这个错连官方文档不提示是什么
+		 * {"errcode":45065,"errmsg":"clientmsgid exist","msg_id":1000000004}
+		 */
+		LogUtil.info(massResult.getErrorCode());
+		LogUtil.info(massResult.getErrorMsg());
 	} catch (WxErrorException e) {
+		//TODO 错误要重新获取另外3条再触发
 		e.printStackTrace();
 	}}
 	
@@ -314,6 +321,23 @@ public class  OpService {
 		return wxContent.toString();
 	}
 	
+	
+	/**
+	 * 根据mediaId预览
+	 * @param mediaId
+	 */
+	public void priviewByMediaId(String mediaId){
+		WxMpMassPreviewMessage  mes = new WxMpMassPreviewMessage();
+		mes.setMediaId(mediaId);
+		mes.setMsgType(WxConsts.MASS_MSG_NEWS);
+		mes.setToWxUserOpenid(ConsTantWx.CXB_OPENID);
+		try {
+			wxService.getMassMessageService().massMessagePreview(mes);
+		} catch (Exception e) {
+			LogUtil.info("预览失败！！");
+			e.printStackTrace();
+		}
+	}
 	
 	/**
 	 * 保存上传图文内容（此时未正式上传成功）
