@@ -15,6 +15,8 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.arronlong.httpclientutil.exception.HttpProcessException;
 import com.heizhe.constant.ConsTantWx;
 import com.heizhe.entity.DailyHotBasic;
@@ -25,9 +27,9 @@ import com.heizhe.tools.RuleString;
 
 @Component
 public class DailyHotJob {
-	public final static long ONE_MINUTE = 10 * 1000;
+	public final static long ONE_MINUTE = 60 * 1000;
 
-	public final static long HALF_HOUR = 60 * 30 * 1000;
+	public final static long HALF_HOUR = 60 * 32 * 1000;
 
 	public final static long ONE_HOUR = 60 * 60 * 1 * 1000;
 	
@@ -43,7 +45,7 @@ public class DailyHotJob {
 	 *             FileNotFoundException
 	 * 
 	 */
-	 @Scheduled(fixedDelay=ONE_HOUR)
+	 @Scheduled(fixedDelay=HALF_HOUR)
 	public void getDailyHotJob() throws HttpProcessException, FileNotFoundException {
 		String pre5Source = CommonTools.getHotAnswerBasic(ConsTantWx.DAILY_HOTANSTER_1_TO_5);
 		String pre10Source = CommonTools.getHotAnswerBasic(ConsTantWx.DAILY_HOTANSTER_5_TO_10);
@@ -68,7 +70,7 @@ public class DailyHotJob {
 		 * 重复的更新点赞数，不重复的直接保存
 		 * 关于匹配器的使用，用来做这种多字段的过滤是否存在不是太适合
 		 */
-		ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("id", "likedCount", "summary","dateInfo","commentCount","createdDate")
+		ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("id", "likedCount", "summary","dateInfo","commentCount","createdDate","imageCount")
 				.withIncludeNullValues();
 		for (DailyHotBasic hot : pre10List) {
 			Example<DailyHotBasic> example = Example.of(hot, matcher);
@@ -78,6 +80,12 @@ public class DailyHotJob {
 			if (dailyHotRespository.exists(example)) {
 				dailyHotRespository.updateLikeCountByUrl(hot.getLikedCount(), hot.getAnswerUrl());
 			}else{
+				int imageCount = CommonTools.getImageCount(hot.getAnswerUrl());
+				JSONObject commonJson = (JSONObject) JSON.parse(CommonTools.getHotComment(hot.getAnswerUrl()));
+				String fComment = commonJson.getJSONArray("data").getJSONObject(0).getString("content");
+				
+				hot.setImageCount(imageCount);
+				hot.setFirstComment(fComment);
 				dailyHotRespository.save(hot);
 			}
 		}

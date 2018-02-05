@@ -93,5 +93,27 @@ public class ConsTantWx {
 	 * cxb's openID
 	 */
 	public static String CXB_OPENID = "o14cB1mSBkyq4PCk3jLXnrnSui2g";
+	
+	/**
+	 * 查询前三条回答 
+	 * SELECT * FROM daily_hot_basic WHERE answer_type <> '禁止转载' AND to_days(created_date) = to_days(now()) ORDER BY liked_count DESC LIMIT 3
+	 */
+	public final static String PREVIEW_THREE = "SELECT * FROM daily_hot_basic WHERE answer_type <> '禁止转载' AND to_days(created_date) = to_days(now()) ORDER BY liked_count DESC LIMIT 3";
+	
+	/**
+	 * 查询前三条回答 (有2张图以上的)
+	 * SELECT * FROM daily_hot_basic WHERE answer_type <> '禁止转载' AND to_days(created_date) = to_days(now()) AND image_count > 2 ORDER BY liked_count DESC LIMIT 3
+	 */
+	public final static String PREVEIW_THREE_IMAGEOVER2 = "SELECT * FROM daily_hot_basic WHERE answer_type <> '禁止转载' AND to_days(created_date) = to_days(now()) AND image_count > 2 ORDER BY liked_count DESC LIMIT 3";
+
+	/**
+	 * 总长:https://www.zhihu.com/api/v4/answers/309785287/comments
+	 * 获取评论url前缀
+	 */
+	public final static String GET_COMMENT_HOT_RUL_PREFIEX = "https://www.zhihu.com/api/v4/answers/";
+	/**
+	 * 获取评论url后缀
+	 */
+	public final static String GET_COMMENT_HOT_RUL_SUBFIEX ="/comments";
 }
 

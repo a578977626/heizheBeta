@@ -31,6 +31,11 @@ public class DailyHotBasic implements Serializable{
 	private String dateInfo;
 	private Integer commentCount;
 	private Date createdDate;
+	private int imageCount;
+	/**
+	 * 按热度点赞数第一的评论
+	 */
+	private String firstComment;
 	/**
 	 * 可转载类型
 	 */
@@ -107,7 +112,17 @@ public class DailyHotBasic implements Serializable{
 	public void setPlatform(String platform) {
 		this.platform = platform;
 	}
-	
-	
+	public int getImageCount() {
+		return imageCount;
+	}
+	public void setImageCount(int imageCount) {
+		this.imageCount = imageCount;
+	}
+	public String getFirstComment() {
+		return firstComment;
+	}
+	public void setFirstComment(String firstComment) {
+		this.firstComment = firstComment;
+	}
 
 }

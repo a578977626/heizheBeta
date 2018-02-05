@@ -87,8 +87,6 @@ public class CommonTools {
 	 * 只能用GET，POST的话知乎会报错
 	 */
 	public static String getHotAnswerBasic(String params) throws HttpProcessException{
-
-		
 		//这个工具类很坑爹啊，GET请求还要自己转码
 		String paramed =  UrlUtil.getURLEncoderString(params);
 		String url = ConsTantWx.DAILY_HOT_ANSTER_URL+"?params="+paramed;
@@ -123,11 +121,48 @@ public class CommonTools {
 				//.files(new String[]{"d:/1.txt","d:/2.txt"})					//上传的话，传递文件路径，一般还需map配置，设置服务器保存路径
 				;
 		
-		Map mapww = config.map();
-		String uurl = config.url();
-		String result1 = HttpClientUtil.get(config);		//get请求
+		String result = HttpClientUtil.get(config);		//get请求
 		System.out.println(params);
-		return result1;
+		return result;
+	}
+	
+	/**
+	 * 获取答案下的评论
+	 * 只能用GET，POST的话知乎会报错
+	 * @param params 参数
+	 * @param ansUrl 答案链接，作为请求的REFERER
+	 */
+	public static String getHotComment(String ansUrl) throws HttpProcessException{
+		String url = ConsTantWx.GET_COMMENT_HOT_RUL_PREFIEX+UrlTools.getTheQuestionId(ansUrl)+ConsTantWx.GET_COMMENT_HOT_RUL_SUBFIEX;
+		
+		Header[] headers 	= HttpHeader.custom()//此请求头是知乎问题页的接口的请求头
+				.userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.98 Safari/537.36 LBBROWSER")
+				.accept("application/json, text/plain, */*")
+				.acceptEncoding("*")//不用*会乱码
+				.acceptLanguage("zh-CN,zh;q=0.8")
+				.connection("keep-alive")
+				.cookie(" _xsrf=7dbb462d-de6e-4781-82fa-5fe2eef99251")
+				.host("www.zhihu.com")
+				.referer(ansUrl)
+				.other("X-Requested-With", "XMLHttpRequest")
+				.authorization("oauth c3cef7c66a1843f8b3a9e6a1e3160e20")
+				.other("x-uuid", "ABDC9JaIZAuPThAdFhwCKf0Iu-cdFqfyOYY=")
+				.build();
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("include", "data[*].author,collapsed,reply_to_author,disliked,content,voting,vote_count,is_parent_author,is_author");
+		map.put("offset", "0");
+		map.put("limit", "10");
+		map.put("order", "normal");
+		map.put("status", "open");
+		//插件式配置请求参数（网址、请求参数、编码、client）
+		HttpConfig config = HttpConfig.custom()
+				.headers(headers)	//设置headers，不需要时则无需设置
+				.url(url)					//设置请求的url
+				.encoding("utf-8") //设置请求和返回编码，默认就是Charset.defaultCharset()
+				;
+		String result = HttpClientUtil.get(config);		//get请求
+		return result;
 	}
 	
 	/**
@@ -137,6 +172,22 @@ public class CommonTools {
 	 */
 	public static Document StringToDoc(String html){
 		return Jsoup.parse(html);
+	}
+	
+	/**
+	 * 根据URL获取Image数量
+	 * @param url
+	 * @return
+	 */
+	public static int getImageCount(String url){
+		Elements ss = CommonTools.getEleByAnswerUrl(url);
+		int count = 0;
+		for(Element ele : ss){
+			if("figure".equals(ele.tagName())){
+				count++;
+			}
+		}
+		return count;
 	}
 	
 }

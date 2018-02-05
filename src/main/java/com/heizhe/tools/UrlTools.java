@@ -13,5 +13,18 @@ public class UrlTools {
 		return name;
 	}
 	
+	
+	/**
+	 * 传入答案Url获取答案Id
+	 * @eg： https://www.zhihu.com/question/266448599/answer/309785287 返回'309785287'
+	 * @param url 
+	 * @return
+	 */
+	public static String getTheQuestionId(String url){
+		int end = url.lastIndexOf("/"); 
+		String id = url.substring(end+1,url.length());
+		return id;
+	}
+	
 
 }

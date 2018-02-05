@@ -96,8 +96,16 @@ public class  OpService {
 	}
 	
 	public String uploadtest(){
-		Elements ss = CommonTools.getEleByAnswerUrl("https://www.zhihu.com/question/28326061");
-		return "00";
+		List<DailyHotBasic> list = dailyHotRespository.listBySQL("SELECT * FROM daily_hot_basic WHERE answer_type <> '禁止转载' AND to_days(created_date) = to_days(now()) ORDER BY liked_count  LIMIT 1000",
+				DailyHotBasic.class);
+		for(DailyHotBasic bac: list ){
+			System.out.println(bac.getImageCount());;
+			bac.setImageCount(CommonTools.getImageCount(bac.getAnswerUrl()));
+			dailyHotRespository.save(bac);
+			System.out.println(bac.getAuthor());
+			System.out.println(bac.getImageCount());
+		}
+		return "11";
 	}
 	
 	/**
@@ -105,9 +113,7 @@ public class  OpService {
 	 * 生成3条文章的预览，并保存mediaId
 	 */
 	public String uploadMatToPreview(){
-		List<DailyHotBasic> list = dailyHotRespository.listBySQL("SELECT * FROM daily_hot_basic WHERE answer_type <> '禁止转载' AND to_days(created_date) = to_days(now()) ORDER BY liked_count DESC LIMIT 3",DailyHotBasic.class);
-//		LogUtil.info(list.get(0).getId().toString());
-//		return list.get(0).getAnswerUrl();
+		List<DailyHotBasic> list = dailyHotRespository.listBySQL(ConsTantWx.PREVEIW_THREE_IMAGEOVER2,DailyHotBasic.class);
 		String mediaId = uploadMatZhiHuV2(list);
 		return mediaId;
 		
@@ -179,7 +185,8 @@ public class  OpService {
 			System.out.println(suRes.getMediaId());
 			if(!StringUtil.isBlank(suRes.getMediaId())){
 				updateMatrialArticleStatus(list,suRes.getMediaId());
-//				wxService.getMassMessageService().massMessagePreview(wxMpMassPreviewMessage)
+//				priviewByMediaId(suRes.getMediaId());
+				sendMessageNews(suRes.getMediaId());
 				return suRes.getMediaId();
 			}
 		} catch (WxErrorException e) {
@@ -239,7 +246,7 @@ public class  OpService {
 	WxMpMassTagMessage massMessage = new WxMpMassTagMessage();
     massMessage.setMsgType(WxConsts.MASS_MSG_NEWS);
     //TODO 这个参数待验证
-    massMessage.setSendIgnoreReprint(true);//文章被判定为转载时，继续进行群发操作
+//    massMessage.setSendIgnoreReprint(false);//文章被判定为转载时，继续进行群发操作
     massMessage.setMediaId(mediaId);
     
     //如果不设置则就意味着发给所有用户
@@ -368,5 +375,6 @@ public class  OpService {
 			 LogUtil.info("上传并Update成功");
 		}
 	}
+	
 	
 }
